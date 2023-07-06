@@ -23,15 +23,58 @@ function randomColor() {
   return color;
 }
 
-// 定义 Ball 构造器
+// 定义 Shape 构造器
 
-function Ball(x, y, velX, velY, color, size) {
+function Shape(x, y, velX, velY, exists) {
   this.x = x;
   this.y = y;
   this.velX = velX;
   this.velY = velY;
+  this.exists = exists;
+}
+
+// 定义 Ball 构造器，继承自 Shape
+
+function Ball(x, y, velX, velY, exists, color, size) {
+  Shape.call(this, x, y, velX, velY, exists);
+
   this.color = color;
   this.size = size;
+}
+Ball.prototype = Object.create(Shape.prototype);
+Ball.prototype.constructor = Ball;
+
+function EvilCircle(x, y, velX, velY, exists,co){
+  Shape.call(this,x,y,20,20,exists);
+}
+EvilCircle().prototype = Object.create(Shape.prototype);
+EvilCircle().prototype.constructor = EvilCircle;
+
+EvilCircle.prototype.draw = function(){
+  ctx.beginPath();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = this.color;
+  ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+  ctx.stroke();
+}
+
+EvilCircle.prototype.checkBounds() = function(){
+  if((this.x + this.size) >= width) {
+    this.velX = -(this.velX);
+  }
+
+  if((this.x - this.size) <= 0) {
+    this.velX = -(this.velX);
+  }
+
+  if((this.y + this.size) >= height) {
+    this.velY = -(this.velY);
+  }
+
+  if((this.y - this.size) <= 0) {
+    this.velY = -(this.velY);
+  }
+
 }
 
 // 定义彩球绘制函数
@@ -94,6 +137,7 @@ while(balls.length < 25) {
     random(0 + size, height - size),
     random(-7, 7),
     random(-7, 7),
+    true,
     randomColor(),
     size
   );
